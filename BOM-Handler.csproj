@@ -52,6 +52,7 @@
     <Compile Include="BOMHandlerForm.Designer.cs">
       <DependentUpon>BOMHandlerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProductDataModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="BOMHandlerForm.resx">
