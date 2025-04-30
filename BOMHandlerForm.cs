@@ -46,6 +46,8 @@ namespace BOM_Handler
             }
         }
 
+        #region List Product Tree Method
+
         private void buttonListTree_Click(object sender, EventArgs e)
         {
 
@@ -120,13 +122,19 @@ namespace BOM_Handler
                     Quantity = count
                 });
             }
-            
+
             return uniqueProducts;
         }
+
+        #endregion
+
+        #region Utility Buttons
 
         private void buttonExpandAll_Click(object sender, EventArgs e)
         {
             productTreeView.ExpandAll();
         }
+
+        #endregion
     }
 }
