@@ -67,10 +67,12 @@ namespace BOM_Handler
 
             //Check if the same parts available
             List<ProductDataModel> productDatas = CountUniqueNames(products);
-            TreeNode treeNode = new TreeNode();
+
             foreach (var product in productDatas)
             {
+                TreeNode treeNode = new TreeNode();
                 treeNode.Text = Text = product.Quantity + "x | " + product.ProductRef.get_PartNumber();
+                product.ParentNode = treeNode;
                 parentNode.Nodes.Add(treeNode);
             }
 
@@ -78,85 +80,47 @@ namespace BOM_Handler
             {
                 if (product.ProductRef.Products.Count > 0)
                 {
-                    GetSubProducts(product.ProductRef.Products, treeNode);
+                    GetSubProducts(product.ProductRef.Products, product.ParentNode);
                 }
             }
-
-            //for (int i = 0; i < productsList.Count; i++)
-            //{
-            //    //Next iteration
-            //    if (productsList[i].Products.Count > 0)
-            //    {
-            //        GetSubProducts(productsList[i].Products, treeNode);
-            //    }
-            //}
         }
 
         public List<ProductDataModel> CountUniqueNames(Products products)
         {
             List<string> productNames = new List<string>();
+            List<Product> productList = new List<Product>();
+            List<string> uniqueProductNames;
             List<ProductDataModel> uniqueProducts = new List<ProductDataModel>();
 
             for (int i = 1; i <= products.Count; i++)
             {
                 productNames.Add(products.Item(i).get_PartNumber());
+                productList.Add(products.Item(i));
             }
 
-            for (int i = 1; i <= products.Count; i++)
+            //get unique product names
+            uniqueProductNames = productNames.Distinct().ToList();
+
+            foreach (var uniqueName in uniqueProductNames)
             {
-                Debug.Print(uniqueProducts.Select(x => x.ProductRef.get_PartNumber()).Equals(products.Item(i).get_PartNumber()).ToString());
-
-                if (!uniqueProducts.Select(x => x.ProductRef.get_PartNumber()).Equals( products.Item(i).get_PartNumber()))
+                Product catchProduct = null;
+                int count = 0;
+                for (int i = 0; i < productNames.Count; i++)
                 {
-                    uniqueProducts.Add(new ProductDataModel
+                    if (uniqueName == productNames[i])
                     {
-                        ProductRef = products.Item(i).ReferenceProduct,
-                        Quantity = 1
-                    });
-                }
-                else
-                {
-                    foreach (var item in uniqueProducts)
-                    {
-                        if (item.ProductRef.get_PartNumber() == products.Item(i).get_PartNumber())
-                        {
-                            item.Quantity++;
-                        }
-                    }
-                }
-            }
-            Debug.Print(uniqueProducts.Count.ToString());
-            return uniqueProducts;
-        }
-
-        public Dictionary<Product, int> CountUniqueNamesOld(Products products)
-        {
-            Dictionary<Product, int> tempDict = new Dictionary<Product, int>();
-            Dictionary<Product, int> uniqueProducts = new Dictionary<Product, int>();
-
-            for (int i = 1; i <= products.Count; i++)
-            {
-                tempDict = uniqueProducts;
-                bool isFound = false;
-                foreach (var uniqueProduct in tempDict)
-                {
-                    if (uniqueProduct.Key.get_PartNumber() == products.Item(i).get_PartNumber())
-                    {
-                        int tempCount = uniqueProduct.Value;
-                        tempCount++;
-                        uniqueProducts[uniqueProduct.Key] = tempCount;
-                        isFound = true;
-                        continue;
+                        catchProduct = productList[i].ReferenceProduct;
+                        count++;
                     }
                 }
 
-                if (!isFound)
+                uniqueProducts.Add(new ProductDataModel()
                 {
-                    uniqueProducts.Add(products.Item(i), 1);
-                }
-
+                    ProductRef = catchProduct,
+                    Quantity = count
+                });
             }
-
+            
             return uniqueProducts;
         }
 
