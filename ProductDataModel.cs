@@ -12,6 +12,5 @@ namespace BOM_Handler
     {
         public Product ProductRef { get; set; }
         public int Quantity { get; set; }
-        public TreeNode ParentNode { get; set; }
     }
 }
